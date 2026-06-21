@@ -132,22 +132,33 @@
         "Ya casi..."
       ];
 
-      var step = 1250; // ms por mensaje -> 4 mensajes ~= 5 segundos
+      var step = 1250;     // ms por mensaje -> 4 mensajes ~= 5 segundos
+      var fadeMs = 350;    // debe ser >= la transición CSS (0.3s) para que termine antes del swap
 
-      messages.slice(1).forEach(function (msg, i) {
+      var i = 0;
+
+      function next() {
+        i++;
+
+        if (i >= messages.length) {
+          loader.classList.add("hidden");
+          result.classList.add("show");
+          return;
+        }
+
+        // 1) desvanecer el mensaje actual
+        textEl.classList.add("fade");
+
+        // 2) recién cuando terminó el fade-out, cambiar el texto y volver a aparecer
         setTimeout(function () {
-          textEl.classList.add("fade");
-          setTimeout(function () {
-            textEl.textContent = msg;
-            textEl.classList.remove("fade");
-          }, 300);
-        }, step * (i + 1));
-      });
+          textEl.textContent = messages[i];
+          textEl.classList.remove("fade");
+          setTimeout(next, step - fadeMs);
+        }, fadeMs);
+      }
 
-      setTimeout(function () {
-        loader.classList.add("hidden");
-        result.classList.add("show");
-      }, step * messages.length);
+      textEl.textContent = messages[0];
+      setTimeout(next, step);
     });
   </script>
 </body>
