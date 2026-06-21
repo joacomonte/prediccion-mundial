@@ -67,19 +67,11 @@
       font-size: 1.15rem;
       font-weight: 600;
       letter-spacing: 0.02em;
+      transition: opacity 0.3s ease;
     }
 
-    .loading-text .dots::after {
-      content: "";
-      animation: dots 1.4s steps(4, end) infinite;
-    }
-
-    @keyframes dots {
-      0%   { content: ""; }
-      25%  { content: "."; }
-      50%  { content: ".."; }
-      75%  { content: "..."; }
-      100% { content: ""; }
+    .loading-text.fade {
+      opacity: 0;
     }
 
     .subtitle {
@@ -119,7 +111,7 @@
 <body>
   <div id="loader">
     <div class="spinner"></div>
-    <div class="loading-text">Cargando predicciones<span class="dots"></span></div>
+    <div class="loading-text" id="loadingText">Cargando datos...</div>
     <div class="subtitle">Analizando resultados</div>
   </div>
 
@@ -131,11 +123,31 @@
     window.addEventListener("load", function () {
       var loader = document.getElementById("loader");
       var result = document.getElementById("result");
+      var textEl = document.getElementById("loadingText");
+
+      var messages = [
+        "Cargando datos...",
+        "Por favor espere...",
+        "Espere un poco más...",
+        "Ya casi..."
+      ];
+
+      var step = 1250; // ms por mensaje -> 4 mensajes ~= 5 segundos
+
+      messages.slice(1).forEach(function (msg, i) {
+        setTimeout(function () {
+          textEl.classList.add("fade");
+          setTimeout(function () {
+            textEl.textContent = msg;
+            textEl.classList.remove("fade");
+          }, 300);
+        }, step * (i + 1));
+      });
 
       setTimeout(function () {
         loader.classList.add("hidden");
         result.classList.add("show");
-      }, 3500);
+      }, step * messages.length);
     });
   </script>
 </body>
